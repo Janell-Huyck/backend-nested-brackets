@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
 Module docstring: Determines if brackets in strings are properly nested
@@ -58,12 +58,34 @@ if sys.version_info[0] >= 3:
 # and (if it is not OK) ‘NO’ followed by a space and the
 # position of the error.
 
+# ()[] {} <> and (* *)
+
 
 def is_nested(line):
     line = make_formatted_line(line)
-    print (line)
-    return "Hello"
-    """Validate a single input line for correct nesting"""
+    left_parenthesis_values = ["(", "[", "{", "<", "(*"]
+    right_parenthesis_values = [")", "]", "}", ">", "*)"]
+    left_stack = []
+
+    for character_index in range(len(line)):
+        character = line[character_index]
+        error_index = character_index + 1
+        if character in left_parenthesis_values:
+            left_stack += [character]
+        elif character in right_parenthesis_values:
+            if len(left_stack) > 0:
+                last_left = left_stack[-1]
+                if left_parenthesis_values.index(last_left) ==\
+                        right_parenthesis_values.index(character):
+                    left_stack.pop()
+                else:
+                    return "NO " + str(error_index)
+            else:
+                return "NO " + str(error_index)
+    if len(left_stack) != 0:
+        return "NO " + str(error_index)
+    else:
+        return "YES"
 
 
 def make_formatted_line(line):
@@ -101,7 +123,7 @@ def main(args):
             for line in input_file:
                 line_validation = is_nested(line)
                 output_file.write(line_validation + "\n")
-                print(line_validation + "\n")
+                print(line_validation)
 
 
 if __name__ == '__main__':
