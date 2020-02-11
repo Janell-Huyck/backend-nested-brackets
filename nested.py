@@ -60,8 +60,39 @@ if sys.version_info[0] >= 3:
 
 
 def is_nested(line):
+    line = make_formatted_line(line)
+    print (line)
     return "Hello"
     """Validate a single input line for correct nesting"""
+
+
+def make_formatted_line(line):
+    line = [character for character in line]
+    formatted_line = []
+    skip = False
+    for character_index in range(0, len(line)):
+        if skip is True:
+            skip = False
+            continue
+        if character_index == len(line)-1:
+            formatted_line += [(line[character_index])]
+        elif line[character_index] != "(" and line[character_index] != "*":
+            formatted_line += [(line[character_index])]
+        elif line[character_index] == "(" and line[character_index + 1] == "*":
+            skip = True
+            formatted_line += [("(*")]
+        elif line[character_index] == "(" and line[character_index + 1] != "*":
+            formatted_line += [(line[character_index])]
+        elif line[character_index] == "*" and line[character_index + 1] == ")":
+            skip = True
+            formatted_line += [("*)")]
+        elif line[character_index] == "*" and line[character_index + 1] != ")":
+            formatted_line += [(line[character_index])]
+        else:
+            print ("I goofed up somewhere in the parsing of the line.")
+    return formatted_line
+
+    print (line)
 
 
 def main(args):
