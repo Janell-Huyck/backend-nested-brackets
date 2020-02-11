@@ -58,8 +58,6 @@ if sys.version_info[0] >= 3:
 # and (if it is not OK) ‘NO’ followed by a space and the
 # position of the error.
 
-# ()[] {} <> and (* *)
-
 
 def is_nested(line):
     line = make_formatted_line(line)
