@@ -6,58 +6,73 @@ Module docstring: Determines if brackets in strings are properly nested
 Reads a series of strings in lines from input.txt.  Evaluates each
 line to determine if the brackets in it are properly nested.  Acceptable
 brackets are: () [] {} <> and (* *). (*) is read as (* followed by ).
-Writes to output.txt either YES or NO followed by the index of where the
-error is at.  (* and *) are counted as one character for error
-indexing purposes.
+Writes to output.txt either YES or NO followed by the length of the
+string prior to the error.  (* and *) are counted as one character for this.
 
 This program from the third week of the third quarter at Kenzie Academy,
 where Python is first being introduced.
 """
-__author__ = "Janell.Huyck"
+__author__ = "Janell.Huyck with help from madarp"
 
 import sys
 if sys.version_info[0] >= 3:
     raise Exception("This program requires python2 interpreter")
 
+l_paren_vals = ["(*", "(", "[", "{", "<"]
+r_paren_vals = ["*)", ")", "]", "}", ">"]
 
-def is_nested(line):
-    l_paren_vals = ["(*", "(", "[", "{", "<"]
-    r_paren_vals = ["*)", ")", "]", "}", ">"]
+
+def check_left_parentheses(line, left_stack):
+    token = line[0]
+    if not line:
+        return token, left_stack
+    for paren in l_paren_vals:
+        if line.startswith(paren):
+            token = paren
+            left_stack.append(token)
+            break
+    return token, left_stack
+
+
+def check_right_parentheses(line, left_stack, token):
+
+    if not line:
+        return token, left_stack
+    for paren in r_paren_vals:
+        if line.startswith(paren):
+            token = paren
+            if not left_stack or l_paren_vals.index(left_stack.pop()) !=\
+                    r_paren_vals.index(paren):
+                return "NO", left_stack
+            break
+    return token, left_stack
+
+
+def check_bracket_nesting(line):
+
     left_stack = []
-    index = 0
+    count = 1
 
     while line:
         token = line[0]
-        index += 1
-        for paren in l_paren_vals:
-            if line.startswith(paren):
-                token = paren
-                left_stack.append(token)
-                break
-        for paren in r_paren_vals:
-            if line.startswith(paren):
-                token = paren
-                if len(left_stack) == 0:
-                    return "NO " + str(index)
-                if r_paren_vals.index(paren) ==\
-                        l_paren_vals.index(left_stack[-1]):
-                    left_stack.pop()
-                    break
-                else:
-                    return "NO " + str(index)
+        token, left_stack = check_left_parentheses(line, left_stack)
+        token, left_stack = check_right_parentheses(line, left_stack, token)
+        if token == "NO":
+            return "NO " + str(count)
+        count += 1
         line = line[len(token):]
 
-    if len(left_stack) == 0:
+    if not left_stack:
         return "YES"
     else:
-        return "NO " + str(index)
+        return "NO " + str(count - 1)
 
 
 def main(args):
     with open('input.txt', 'r') as input_file:
         with open('output.txt', 'w') as output_file:
             for line in input_file:
-                line_validation = is_nested(line)
+                line_validation = check_bracket_nesting(line)
                 output_file.write(line_validation + "\n")
                 print(line_validation)
 
