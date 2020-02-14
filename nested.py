@@ -22,41 +22,36 @@ l_paren_vals = ["(*", "(", "[", "{", "<"]
 r_paren_vals = ["*)", ")", "]", "}", ">"]
 
 
-def check_left_parentheses(line, left_stack):
-    token = line[0]
-    if not line:
-        return token, left_stack
-    for paren in l_paren_vals:
-        if line.startswith(paren):
-            token = paren
-            left_stack.append(token)
-            break
-    return token, left_stack
-
-
-def check_right_parentheses(line, left_stack, token):
-
-    if not line:
-        return token, left_stack
-    for paren in r_paren_vals:
-        if line.startswith(paren):
-            token = paren
-            if not left_stack or l_paren_vals.index(left_stack.pop()) !=\
-                    r_paren_vals.index(paren):
-                return "NO", left_stack
-            break
-    return token, left_stack
-
-
 def check_bracket_nesting(line):
-
     left_stack = []
     count = 1
 
+    def check_left_parentheses(token, left_stack):
+        if not line:
+            return token
+        for paren in l_paren_vals:
+            if line.startswith(paren):
+                token = paren
+                left_stack.append(token)
+                break
+        return token
+
+    def check_right_parentheses(token):
+        if not line:
+            return token
+        for paren in r_paren_vals:
+            if line.startswith(paren):
+                token = paren
+                if not left_stack or l_paren_vals.index(left_stack.pop()) !=\
+                        r_paren_vals.index(paren):
+                    return "NO"
+                break
+        return token
+
     while line:
         token = line[0]
-        token, left_stack = check_left_parentheses(line, left_stack)
-        token, left_stack = check_right_parentheses(line, left_stack, token)
+        token = check_left_parentheses(token, left_stack)
+        token = check_right_parentheses(token)
         if token == "NO":
             return "NO " + str(count)
         count += 1
