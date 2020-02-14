@@ -23,10 +23,13 @@ r_paren_vals = ["*)", ")", "]", "}", ">"]
 
 
 def check_bracket_nesting(line):
+    """ Evaluate a single line of text to determine if brackets are nested properly"""
+
     left_stack = []
     count = 1
 
     def check_left_parentheses(token, left_stack):
+        """Look for a left parentheses and add it to left_stack if found"""
         if not line:
             return token
         for paren in l_paren_vals:
@@ -37,6 +40,7 @@ def check_bracket_nesting(line):
         return token
 
     def check_right_parentheses(token):
+        """Look for right parentheses and if found see if it has a matching left one in left_stack"""
         if not line:
             return token
         for paren in r_paren_vals:
@@ -64,6 +68,7 @@ def check_bracket_nesting(line):
 
 
 def main(args):
+    """Write the evaluation of each line of 'input.txt' into 'output.txt' """
     with open('input.txt', 'r') as input_file:
         with open('output.txt', 'w') as output_file:
             for line in input_file:
